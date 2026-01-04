@@ -87,6 +87,9 @@ public class DriverFactory {
 
 	public Properties initProp() {
 		String envName = System.getProperty("env");
+		if (envName == null || envName.isEmpty()) {
+		    envName = "qa"; // fallback for Jenkins/Allure
+		}
 		System.out.println("running test suite on env: " + envName);
 				
 		FileInputStream ip = null;
@@ -120,7 +123,7 @@ public class DriverFactory {
 				//System.out.println("plz pass the right env name..."+ envName);
 				log.error("plz pass the right env name..."+ envName);
 								
-				throw new FrameworkException("===INVALID ENV===");
+				throw new FrameworkException("===INVALID ENV====");
 							}
 						}
 
