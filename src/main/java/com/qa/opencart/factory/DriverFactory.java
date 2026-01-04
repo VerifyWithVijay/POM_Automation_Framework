@@ -35,6 +35,9 @@ public class DriverFactory {
 		
 
 		String browserName = prop.getProperty("browser");
+		if (browserName == null) {
+		    throw new FrameworkException("Browser is not defined in properties file!");
+		}
 		//System.out.println("The Browser is: " + browserName);
 		log.info("The Browser is: " + browserName);
 		highlight = prop.getProperty("highlight");
