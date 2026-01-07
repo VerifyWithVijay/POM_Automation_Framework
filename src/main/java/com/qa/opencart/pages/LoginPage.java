@@ -33,7 +33,7 @@ public class LoginPage {
 		ChainTestListener.log("login page title==>" + title);
 		return title;
 	}
-
+	
 	@Step("getLoginPageURL")
 	public String getLoginPageURL() {
 		String url = eleUtil.waitForURLContains(AppConstants.LOGIN_PAGE_URL_FRACTION, AppConstants.DEFAULT_TIME_OUT);
