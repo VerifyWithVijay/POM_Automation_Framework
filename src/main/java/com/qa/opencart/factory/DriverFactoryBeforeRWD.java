@@ -23,7 +23,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.exception.FrameworkException;
 
-public class DriverFactory {
+public class DriverFactoryBeforeRWD {
 
 	WebDriver driver;
 	Properties prop;
@@ -31,11 +31,12 @@ public class DriverFactory {
 	public static String highlight;
 	
 	public static ThreadLocal<WebDriver>tlDriver = new ThreadLocal<WebDriver>();
-	private static final Logger log = LogManager.getLogger(DriverFactory.class);
+	private static final Logger log = LogManager.getLogger(DriverFactoryBeforeRWD.class);
 
 
 	public WebDriver initDriver(Properties prop) {
 		
+
 		String browserName = prop.getProperty("browser");
 		if (browserName == null) {
 		    throw new FrameworkException("Browser is not defined in properties file!");
@@ -45,42 +46,29 @@ public class DriverFactory {
 		highlight = prop.getProperty("highlight");
 		optionsManager = new OptionsManager(prop);
 		
-		boolean remoteExecution = Boolean.parseBoolean(prop.getProperty("remote"));
 
-		switch (browserName.trim().toLowerCase()) {
+
+		switch (browserName.toLowerCase().trim()) {
 		case "chrome":
-			if (remoteExecution) {
-				// run tcs on remote/grid:
-				initRemoteDriver("chrome");
-			} else {
-				// local execution:
-				tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
-			}
+			tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+			//driver = new ChromeDriver(optionsManager.getChromeOptions());
 			break;
 		case "firefox":
-			if (remoteExecution) {
-				// run tcs on remote/grid:
-				initRemoteDriver("firefox");
-			} else {
-				// local execution:
-				tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
-			}
+			tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
+			//driver = new FirefoxDriver(optionsManager.getFirefoxOptions());
 			break;
 		case "edge":
-			if (remoteExecution) {
-				// run tcs on remote/grid:
-				initRemoteDriver("edge");
-			} else {
-				// local execution:
-				tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
-			}
+			tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
+		//	driver = new EdgeDriver(optionsManager.getEdgeOptions());
 			break;
 		case "safari":
-			tlDriver.set(new SafariDriver());
+			driver = new SafariDriver();
 			break;
+
 		default:
-			log.error("plz pass the valid browser name.." + browserName);
-			throw new FrameworkException("===invalid browser name===");
+		//	System.out.println("Please pass the right browser: " + browserName);
+			log.error("Please pass the right browser: " + browserName);
+			throw new FrameworkException("*** Invalid browser Name ***");
 		}
 
 		getDriver().manage().deleteAllCookies();
@@ -89,37 +77,6 @@ public class DriverFactory {
 		return getDriver();
 	}
 	
-	
-	/**
-	 * init the remote driver with selenium grid
-	 * 
-	 * @param browserName
-	 */
-	private void initRemoteDriver(String browserName) {
-		System.out.println("Running tests on grid: " + browserName);
-
-		try {
-			switch (browserName.toLowerCase().trim()) {
-			case "chrome":
-				tlDriver.set(
-						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getChromeOptions()));
-				break;
-			case "firefox":
-				tlDriver.set(
-						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getFirefoxOptions()));
-				break;
-			case "edge":
-				tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getEdgeOptions()));
-				break;
-
-			default:
-				System.out.println("browser is not supported on GRID... " + browserName);
-				break;
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
 	
 /**
  * This method is used to get the driver using threadlocal
